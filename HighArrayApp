@@ -1,0 +1,223 @@
+package RobertLafore;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+/**
+ * Created by Елена on 08.01.2015.
+ * Действия с неупорядоченным массивом - вставка, поиск, удаление заданного элеиента, удаление максимального значения.
+ * Книга Robert Lafore "Data Structures & Algorithms in Java".
+ */
+
+class HighArray {
+    private long[] array;
+    public  int nElems;
+
+    // консутруктор
+    public HighArray(int length) {
+        array = new long[length];
+        nElems = 0;
+    }
+
+    public void insert(long item) {
+        array[nElems] = item;
+        nElems++;
+    }
+
+    public boolean find(long searchKey) {
+        int i;
+        for (i = 0; i < nElems; i++) {
+            if (array[i] == searchKey)
+                break;
+        }
+        if (i == nElems)
+            return false;
+        else
+            return true;
+    }
+
+    public boolean delete(long item) {
+        int i;
+        for (i = 0; i < nElems; i++)
+            if (item == array[i])
+                break;
+        if (i == nElems)
+            return false;
+        else {
+            for (int j = i; j < nElems; j++)
+                if (j == nElems - 1)
+                    array[j] = 0;
+                else
+                    array[j] = array[j + 1];
+            nElems--;
+            return true;
+        }
+    }
+
+    public void display() {
+        for (int i = 0; i < nElems; i++)
+            System.out.print(array[i] + " ");
+        System.out.println();
+    }
+
+    public void displayAllItems() {
+        for (int i = 0; i < array.length; i++)
+            System.out.print(array[i] + " ");
+        System.out.println();
+    }
+
+    // вариант 2
+    public long getMax1()
+    {
+        if (nElems == 0)
+            return -1L;
+
+        long max = array[0];
+
+        for (int i = 1; i < nElems; i++)
+            if (max < array[i])
+                max = array[i];
+
+        return max;
+    }
+
+    public long removeMax() {
+
+        if (nElems == 0)
+            return -1L;
+
+        long max = array[0];
+        int iMax = 0;
+        for (int i = 0; i < nElems; i++) {
+            if (max < array[i]) {
+                max = array[i];
+                iMax = i;
+            }
+        }
+
+        for (int n = iMax; n < nElems; n++) {
+            if (n == nElems - 1)
+                array[n] = 0;
+            else
+                array[n] = array[n + 1];
+        }
+        nElems--;
+
+        return max;
+    }
+
+    public int getLength() {
+        return array.length;
+    }
+
+    public void noDups() {
+        for (int i = 0; i < array.length - 1; i++) {
+            if (array[i] != -1L) {
+                for (int j = i + 1; j < array.length; j++)
+                    if (array[i] == array[j])
+                        array[j] = -1L;
+            }
+        }
+        for (int k = 0; k < array.length; k++)
+            delete(-1L);
+    }
+
+}
+
+
+
+
+public class HighArrayApp {
+    public static void main(String[] args) throws IOException {
+
+        int numberItemsInArray = 30;
+        HighArray array = new HighArray(numberItemsInArray);
+
+        System.out.println("Число элементов = " + array.nElems + " из " + numberItemsInArray);
+        System.out.println("Максимальное значение = " + array.getMax1());
+
+        long deletedMax = array.removeMax();
+        if (deletedMax == -1)
+            System.out.println("Максимальное число удалить не удалось, т.к. массив пустой.");
+        else
+            System.out.println("Удалено максимальное число = " + deletedMax);
+
+        for (int i = 0; i < array.getLength(); i++) {
+            array.insert(i);
+        }
+
+
+
+        array.display();
+        System.out.println("Число элементов = " + array.nElems + " из " + numberItemsInArray);
+        System.out.println("Максимальное значение = " + array.getMax1());
+        System.out.println();
+
+        long deletedMax1 = array.removeMax();
+        System.out.println("Удалено максимальное число = " + deletedMax1);
+        array.display();
+        System.out.println("Число элементов = " + array.nElems + " из " + numberItemsInArray);
+        System.out.println();
+        array.displayAllItems();
+
+        array.insert(3L);
+        array.display();
+        System.out.println("Число элементов = " + array.nElems + " из " + numberItemsInArray);
+        System.out.println("Максимальное значение = " + array.getMax1());
+        System.out.println();
+
+        array.getLength();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Какое число будем искать?");
+
+        if (array.find(Long.parseLong(reader.readLine())))
+            System.out.println("Число найдено");
+        else
+            System.out.println("Число не найдено");
+
+        System.out.println("Давайте чтонить удалим? Введите число для удаления из массива:");
+
+        if (array.delete(Long.parseLong(reader.readLine())))
+            System.out.println("Число удалено");
+        else
+            System.out.println("Число не найдено");
+
+        array.display();
+        System.out.println("Число элементов = " + array.nElems + " из " + numberItemsInArray);
+        System.out.println();
+
+        System.out.println("Максимальное значение = " + array.getMax1());
+
+        array.display();
+
+        // сортировка с помощью removeMax() методом выбора. Нужно создать второй массив для хранения отсортированных данных.
+        HighArray sortArray = new HighArray(numberItemsInArray);
+        for (int i = sortArray.getLength() - 1; i > 0; i--) {
+            sortArray.insert(array.removeMax());
+        }
+
+        array.display();
+        array.displayAllItems();
+        sortArray.display();
+        sortArray.displayAllItems();
+
+        System.out.println();
+
+        // упражнение 2.6 - удалить дубликаты из массива, оставив только одно значение
+        // создать массив из 30 элементов и наполнить его случайными повторяющимися числами от 0 до 15
+
+        HighArray dupsArray = new HighArray(numberItemsInArray);
+        for (int i = 0; i < dupsArray.getLength(); i++)
+            dupsArray.insert((long)(Math.random()*10));
+        dupsArray.display();
+        dupsArray.displayAllItems();
+
+        dupsArray.noDups();
+        dupsArray.display();
+        dupsArray.displayAllItems();
+
+
+    }
+}
